@@ -1,6 +1,6 @@
+import { Env } from '@/env'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
-import { Env } from 'src/env'
 import { AppModule } from './app.module'
 
 async function bootstrap() {
