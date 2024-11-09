@@ -10,6 +10,7 @@ import { DeleteQuestionUseCase } from '@/domain/forum/application/use-cases/dele
 import { DeleteQuestionCommentUseCase } from '@/domain/forum/application/use-cases/delete-question-comment'
 import { EditAnswerUseCase } from '@/domain/forum/application/use-cases/edit-answer'
 import { EditQuestionUseCase } from '@/domain/forum/application/use-cases/edit-question'
+import { FetchAnswerCommentsUseCase } from '@/domain/forum/application/use-cases/fetch-answer-comments'
 import { FetchQuestionAnswersUseCase } from '@/domain/forum/application/use-cases/fetch-question-answers'
 import { FetchQuestionCommentsUseCase } from '@/domain/forum/application/use-cases/fetch-question-comments'
 import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-cases/fetch-recent-questions'
@@ -30,6 +31,7 @@ import { DeleteQuestionCommentController } from '@/infra/http/controllers/delete
 import { DeleteQuestionController } from '@/infra/http/controllers/delete-question.controller'
 import { EditAnswerController } from '@/infra/http/controllers/edit-answer.controller'
 import { EditQuestionController } from '@/infra/http/controllers/edit-question.controller'
+import { FetchAnswerCommentsController } from '@/infra/http/controllers/fetch-answer-comments.controller'
 import { FetchQuestionAnswersController } from '@/infra/http/controllers/fetch-question-answers.controller'
 import { FetchQuestionCommentsController } from '@/infra/http/controllers/fetch-question-comments.controller'
 import { FetchRecentQuestionsController } from '@/infra/http/controllers/fetch-recent-questions.controller'
@@ -56,6 +58,7 @@ import { Module } from '@nestjs/common'
     CommentOnAnswerController,
     DeleteAnswerCommentController,
     FetchQuestionCommentsController,
+    FetchAnswerCommentsController,
   ],
   providers: [
     RegisterStudentUseCase,
@@ -75,6 +78,7 @@ import { Module } from '@nestjs/common'
     CommentOnAnswerUseCase,
     DeleteAnswerCommentUseCase,
     FetchQuestionCommentsUseCase,
+    FetchAnswerCommentsUseCase,
   ],
 })
 export class HttpModule {}
