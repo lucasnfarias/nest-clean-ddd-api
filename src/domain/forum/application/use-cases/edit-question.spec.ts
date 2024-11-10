@@ -94,4 +94,51 @@ describe('Edit Question Use Case', () => {
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(NotAllowedError)
   })
+
+  it('should sync new and removed attachments when editing a question', async () => {
+    const newQuestion = makeQuestion(
+      {
+        authorId: new UniqueEntityID('author-test-1'),
+      },
+      new UniqueEntityID('question-test'),
+    )
+
+    await inMemoryQuestionsRepository.create(newQuestion)
+
+    inMemoryQuestionAttachmentsRepository.questionAttachments.push(
+      makeQuestionAttachment(
+        {
+          questionId: new UniqueEntityID('question-test'),
+          attachmentId: new UniqueEntityID('1'),
+        },
+        new UniqueEntityID('question-test'),
+      ),
+      makeQuestionAttachment(
+        {
+          questionId: new UniqueEntityID('question-test'),
+          attachmentId: new UniqueEntityID('2'),
+        },
+        new UniqueEntityID('question-test'),
+      ),
+    )
+
+    expect(inMemoryQuestionsRepository.questions[0]).toStrictEqual(newQuestion)
+
+    const result = await sut.execute({
+      questionId: 'question-test',
+      authorId: 'author-test-1',
+      title: 'Updated title',
+      content: 'Updated content',
+      attachmentsIds: ['1', '3'],
+    })
+
+    expect(result.isRight()).toBe(true)
+
+    expect(
+      inMemoryQuestionAttachmentsRepository.questionAttachments,
+    ).toStrictEqual([
+      expect.objectContaining({ attachmentId: new UniqueEntityID('1') }),
+      expect.objectContaining({ attachmentId: new UniqueEntityID('3') }),
+    ])
+  })
 })
