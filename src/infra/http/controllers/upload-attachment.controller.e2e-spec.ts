@@ -38,9 +38,12 @@ describe('Upload attachment (E2E)', () => {
       .attach('file', './test/e2e/upload-sample.jpg')
 
     expect(response.statusCode).toBe(201)
+    expect(response.body).toEqual({
+      attachmentId: expect.any(String),
+    })
 
-    // const attachmentOnDatabase = await prisma.attachment.findFirst()
+    const attachmentOnDatabase = await prisma.attachment.findFirst()
 
-    // expect(attachmentOnDatabase).toBeTruthy()
+    expect(attachmentOnDatabase).toBeTruthy()
   })
 })
