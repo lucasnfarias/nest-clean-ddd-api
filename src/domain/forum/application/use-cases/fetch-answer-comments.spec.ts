@@ -1,32 +1,54 @@
 import { UniqueEntityID } from '@/core/entities/value-objects/unique-entity-id'
 import { FetchAnswerCommentsUseCase } from '@/domain/forum/application/use-cases/fetch-answer-comments'
 import { makeAnswerComment } from 'test/factories/make-answer-comment'
+import { makeStudent } from 'test/factories/make-student'
 import { InMemoryAnswerCommentsRepository } from 'test/repositories/in-memory-answer-comments-repository'
+import { InMemoryStudentsRepository } from 'test/repositories/in-memory-students-repository'
 
 describe('Fetch Answer Comments Use Case', () => {
   let inMemoryAnswerCommentsRepository: InMemoryAnswerCommentsRepository
+  let inMemoryStudentsRepository: InMemoryStudentsRepository
   let sut: FetchAnswerCommentsUseCase
 
   beforeEach(() => {
-    inMemoryAnswerCommentsRepository = new InMemoryAnswerCommentsRepository()
+    inMemoryStudentsRepository = new InMemoryStudentsRepository()
+    inMemoryAnswerCommentsRepository = new InMemoryAnswerCommentsRepository(
+      inMemoryStudentsRepository,
+    )
     sut = new FetchAnswerCommentsUseCase(inMemoryAnswerCommentsRepository)
   })
 
   it('should be able to fetch answer comments', async () => {
+    const student = makeStudent()
+
+    inMemoryStudentsRepository.students.push(student)
+
     await inMemoryAnswerCommentsRepository.create(
-      makeAnswerComment({
-        answerId: new UniqueEntityID('answer-test-1'),
-      }),
+      makeAnswerComment(
+        {
+          answerId: new UniqueEntityID('answer-test-1'),
+          authorId: student.id,
+        },
+        new UniqueEntityID('comment-1'),
+      ),
     )
     await inMemoryAnswerCommentsRepository.create(
-      makeAnswerComment({
-        answerId: new UniqueEntityID('answer-test-1'),
-      }),
+      makeAnswerComment(
+        {
+          answerId: new UniqueEntityID('answer-test-1'),
+          authorId: student.id,
+        },
+        new UniqueEntityID('comment-2'),
+      ),
     )
     await inMemoryAnswerCommentsRepository.create(
-      makeAnswerComment({
-        answerId: new UniqueEntityID('answer-test-1'),
-      }),
+      makeAnswerComment(
+        {
+          answerId: new UniqueEntityID('answer-test-1'),
+          authorId: student.id,
+        },
+        new UniqueEntityID('comment-3'),
+      ),
     )
 
     const result = await sut.execute({
@@ -34,24 +56,37 @@ describe('Fetch Answer Comments Use Case', () => {
       page: 1,
     })
 
-    expect(result.value?.answerComments).toEqual([
+    expect(result.value?.comments).toEqual([
       expect.objectContaining({
-        answerId: new UniqueEntityID('answer-test-1'),
+        commentId: new UniqueEntityID('comment-1'),
+        authorId: student.id,
+        author: student.name,
       }),
       expect.objectContaining({
-        answerId: new UniqueEntityID('answer-test-1'),
+        commentId: new UniqueEntityID('comment-2'),
+        authorId: student.id,
+        author: student.name,
       }),
       expect.objectContaining({
-        answerId: new UniqueEntityID('answer-test-1'),
+        commentId: new UniqueEntityID('comment-3'),
+        authorId: student.id,
+        author: student.name,
       }),
     ])
   })
 
   it('should be able to fetch paginated answer comments', async () => {
+    const student = makeStudent()
+
+    inMemoryStudentsRepository.students.push(student)
+
     for (let i = 1; i <= 22; i++) {
       await inMemoryAnswerCommentsRepository.create(
         makeAnswerComment(
-          { answerId: new UniqueEntityID('answer-test-1') },
+          {
+            answerId: new UniqueEntityID('answer-test-1'),
+            authorId: student.id,
+          },
           new UniqueEntityID(`answer-comment-id-${i}`),
         ),
       )
@@ -62,14 +97,16 @@ describe('Fetch Answer Comments Use Case', () => {
       page: 2,
     })
 
-    expect(result.value?.answerComments).toEqual([
+    expect(result.value?.comments).toEqual([
       expect.objectContaining({
-        answerId: new UniqueEntityID('answer-test-1'),
-        id: new UniqueEntityID(`answer-comment-id-21`),
+        commentId: new UniqueEntityID(`answer-comment-id-21`),
+        authorId: student.id,
+        author: student.name,
       }),
       expect.objectContaining({
-        answerId: new UniqueEntityID('answer-test-1'),
-        id: new UniqueEntityID(`answer-comment-id-22`),
+        commentId: new UniqueEntityID(`answer-comment-id-22`),
+        authorId: student.id,
+        author: student.name,
       }),
     ])
   })
