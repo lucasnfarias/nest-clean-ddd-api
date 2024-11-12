@@ -53,11 +53,11 @@ describe('Edit question (E2E)', () => {
       authorId: user.id,
     })
 
-    await questionAttachmentFactory.makePrismaAttachment({
+    await questionAttachmentFactory.makePrismaQuestionAttachment({
       attachmentId: attachment1.id,
       questionId: question.id,
     })
-    await questionAttachmentFactory.makePrismaAttachment({
+    await questionAttachmentFactory.makePrismaQuestionAttachment({
       attachmentId: attachment2.id,
       questionId: question.id,
     })
